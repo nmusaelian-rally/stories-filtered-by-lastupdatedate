@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UserStories By LastUpdateDate</title>
+
+    <script type="text/javascript" src="/apps/2.0rc1/sdk.js"></script>
+
+
+
+    <script type="text/javascript">
+        Rally.onReady(function () {
+Ext.define('CustomApp', {
+                extend: 'Rally.app.App',
+                componentCls: 'app',
+            
+                launch: function() {
+                    var millisecondsInDay = 86400000;            
+                    var currentDate = new Date();
+                    var startDate = new Date(currentDate - millisecondsInDay);
+                    var aDate = (new Date()).toISOString();
+                    var startDateUTC = startDate.toISOString();
+                    Rally.data.ModelFactory.getModel({
+                        type: 'UserStory',
+                        success: function(model) {
+                            this.grid = this.add({
+                                xtype: 'rallygrid',
+                                itemId: 'grid',
+                                model: model,
+                                columnCfgs: [
+                                    'FormattedID',
+                                    'Name',
+                                    'Owner',
+                                    'LastUpdateDate'
+                                ],
+                                storeConfig: {
+                                    filters: [
+                                        {
+                                            property: 'LastUpdateDate',
+                                            operator: '>',
+                                            value: startDateUTC
+                                        }
+                                    ]
+                                }
+                            });
+                        },
+                        scope: this
+                    });
+                    console.log('items updated since', startDateUTC);
+                }
+
+            });
+            
+            Rally.launchApp('CustomApp', {
+                name:"UserStories By LastUpdateDate"
+                //parentRepos:""
+            });
+
+        });
+    </script>
+
+
+
+
+    <style type="text/css">
+.app {
+     /* Add app styles here */
+}
+
+    </style>
+
+</head>
+<body></body>
+</html>
